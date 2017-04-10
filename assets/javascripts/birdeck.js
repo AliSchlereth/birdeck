@@ -48,12 +48,32 @@ var createPost = function() {
   })
 }
 
+var updatePostById = function() {
+  var updateID = $(this).children('input[name=update-id]').val();
+  var updateDescription = $(this).children('input[name=post-description]').val();
+  return $.ajax({
+    url: API + '/api/v1/posts/' + updateID,
+    method: 'PUT',
+    data: { 'post': { 'description': updateDescription } }
+  }).done(function(data) {
+    fetchPosts();
+    $('input[name=update-id]').val('');
+    $('input[name=post-description]').val('');
+  })
+  .fail(function(error) {
+    console.error(error);
+  });
+
+}
+
+
 $(document).ready(function(){
   // #tabs for CRUD actions activated
   $( "#tabs" ).tabs();
-  $('#fetch-posts').on('click', fetchPosts)
-  $('.show-form').on('submit', fetchPostById)
-  $('.post-form').on('submit', createPost)
+  $('#fetch-posts').on('click', fetchPosts);
+  $('.show-form').on('submit', fetchPostById);
+  $('.post-form').on('submit', createPost);
+  $('.update-form').on('submit', updatePostById);
   getPosts();
 
 
