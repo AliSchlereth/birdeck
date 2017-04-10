@@ -63,9 +63,20 @@ var updatePostById = function() {
   .fail(function(error) {
     console.error(error);
   });
-
 }
 
+var deletePostById = function() {
+  var postId = $(this).children('.form-control').val();
+  return $.ajax({
+    url: API + '/api/v1/posts/' + postId,
+    method: 'DELETE'
+  }).done(function(data) {
+    fetchPosts();
+  })
+  .fail(function(error) {
+    console.error(error)
+  });
+}
 
 $(document).ready(function(){
   // #tabs for CRUD actions activated
@@ -74,6 +85,7 @@ $(document).ready(function(){
   $('.show-form').on('submit', fetchPostById);
   $('.post-form').on('submit', createPost);
   $('.update-form').on('submit', updatePostById);
+  $('.delete-form').on('submit', deletePostById);
   getPosts();
 
 
