@@ -1,22 +1,34 @@
 var API = 'http://localhost:3000'
 
+var onFail = function(error) {
+console.error(error)
+}
+
+var clearInput = function() {
+  $('input[name=update-id]').val('');
+  $('input[name=post-description]').val('');
+  $('input[name=delete-id]').val('');
+}
+
 var getPosts = function() {
   return $.ajax({
     url: API + '/api/v1/posts',
     method: 'GET'
   }).done(function(data){
     for (var i = 0; i < data.length; i++ ) {
-      $('#latest-posts').append('<p class="post">' + data[i].description + '</p>');
+      printPost(data[i]);
     }
   })
-  .fail(function(error){
-    console.error(error)
-  })
+  .fail(onFail);
 }
 
 var fetchPosts = function() {
   $('#latest-posts').html('');
   getPosts();
+}
+
+var printPost = function(data) {
+  $('#latest-posts').append('<p class="post">' + data.description + '</p>');
 }
 
 var fetchPostById = function() {
@@ -26,26 +38,19 @@ var fetchPostById = function() {
     method: 'GET'
   }).done(function(data) {
     $('#latest-posts').html('');
-    $('#latest-posts').append('<p class="post">' + data.description + '</p>');
+    printPost(data);
   })
-  .fail(function(error) {
-    console.err(error)
-  });
+  .fail(onFail);
 }
 
 var createPost = function() {
   var postDescription = $(this).children('.form-control').val();
-  $('#latest-posts').html('');
   return $.ajax({
     url: API + '/api/v1/posts',
     method: 'POST',
     data: { 'post': { 'description': postDescription } }
-  }).done(function(data) {
-    $('#latest-posts').append('<p class="post">' + data.description + '</p>');
-  })
-  .fail(function(error) {
-    console.error(error)
-  })
+  }).done(fetchPosts)
+  .fail(onFail);
 }
 
 var updatePostById = function() {
@@ -57,12 +62,9 @@ var updatePostById = function() {
     data: { 'post': { 'description': updateDescription } }
   }).done(function(data) {
     fetchPosts();
-    $('input[name=update-id]').val('');
-    $('input[name=post-description]').val('');
+    clearInput();
   })
-  .fail(function(error) {
-    console.error(error);
-  });
+  .fail(onFail);
 }
 
 var deletePostById = function() {
@@ -72,10 +74,9 @@ var deletePostById = function() {
     method: 'DELETE'
   }).done(function(data) {
     fetchPosts();
+    clearInput();
   })
-  .fail(function(error) {
-    console.error(error)
-  });
+  .fail(onFail);
 }
 
 $(document).ready(function(){
