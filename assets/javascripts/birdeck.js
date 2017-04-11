@@ -20,7 +20,6 @@ var getAllPosts = function() {
 }
 
 var printPost = function(data) {
-  clearPosts();
   $('#latest-posts').append('<p class="post">' + data.description + '</p>')
 }
 
@@ -30,11 +29,23 @@ var fetchPost = function() {
     url: API + '/posts/' + postID,
     method: 'GET'
   })
-  .done(printPost)
+  .done(function(data) {
+    clearPosts();
+    printPost(data);
+  })
   .fail(onFail);
 }
 
-
+var createPost = function() {
+  var postDescription = $('input[name=post-description').val();
+  return $.ajax({
+    url: API + '/posts',
+    method: 'POST',
+    data: { 'post': { 'description': postDescription } }
+  })
+  .done(printPost)
+  .fail(onFail);
+}
 
 var clearPosts = function() {
   $('#latest-posts').html('');
@@ -52,7 +63,7 @@ $(document).ready(function(){
   $( "#tabs" ).tabs();
   $('button[name=button-fetch]').on('click', fetchPosts);
   $('.show-form').on('submit', fetchPost);
-
+  $('.post-form').on('submit', createPost);
 
   // general form submission prevention
   $('form').on('submit', function(event){
