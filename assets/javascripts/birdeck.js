@@ -47,6 +47,18 @@ var createPost = function() {
   .fail(onFail);
 }
 
+var updatePostById = function() {
+  var postID = $('input[name=update-id]').val();
+  var postDescription = $('.update-form input[name=post-description]').val();
+  return $.ajax({
+    url: API + '/posts/' + postID,
+    method: 'PUT',
+    data: {'post': {'description': postDescription}}
+  })
+  .done(fetchPosts)
+  .fail(onFail);
+}
+
 var clearPosts = function() {
   $('#latest-posts').html('');
 }
@@ -64,6 +76,7 @@ $(document).ready(function(){
   $('button[name=button-fetch]').on('click', fetchPosts);
   $('.show-form').on('submit', fetchPost);
   $('.post-form').on('submit', createPost);
+  $('.update-form').on('submit', updatePostById);
 
   // general form submission prevention
   $('form').on('submit', function(event){
