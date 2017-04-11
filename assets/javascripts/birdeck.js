@@ -4,6 +4,13 @@ var onFail = function(error) {
   console.error(error);
 }
 
+var clearInput = function() {
+  $('input[name=show-id]').val('');
+  $('input[name=post-description]').val('');
+  $('input[name=update-id]').val('');
+  $('input[name=delete-id]').val('');
+}
+
 var printAllPosts = function(data) {
   for (var i = 0; i < data.length; i++) {
     $('#latest-posts').append('<p class="post">' + data[i].description + '<p>' );
@@ -32,6 +39,7 @@ var fetchPost = function() {
   .done(function(data) {
     clearPosts();
     printPost(data);
+    clearInput();
   })
   .fail(onFail);
 }
@@ -43,7 +51,10 @@ var createPost = function() {
     method: 'POST',
     data: { 'post': { 'description': postDescription } }
   })
-  .done(printPost)
+  .done(function(data) {
+    printPost(data);
+    clearInput();
+  })
   .fail(onFail);
 }
 
@@ -55,7 +66,23 @@ var updatePostById = function() {
     method: 'PUT',
     data: {'post': {'description': postDescription}}
   })
-  .done(fetchPosts)
+  .done(function() {
+    fetchPosts();
+    clearInput();
+  })
+  .fail(onFail);
+}
+
+var deletePostById = function() {
+  var postID = $(this).children('.form-control').val()
+  return $.ajax({
+    url: API + '/posts/' + postID,
+    method: 'DELETE'
+  })
+  .done(function() {
+    fetchPosts();
+    clearInput();
+  })
   .fail(onFail);
 }
 
@@ -77,6 +104,7 @@ $(document).ready(function(){
   $('.show-form').on('submit', fetchPost);
   $('.post-form').on('submit', createPost);
   $('.update-form').on('submit', updatePostById);
+  $('.delete-form').on('submit', deletePostById);
 
   // general form submission prevention
   $('form').on('submit', function(event){
