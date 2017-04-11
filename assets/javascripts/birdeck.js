@@ -15,12 +15,22 @@ var getAllPosts = function() {
   .fail();
 }
 
+var clearPosts = function() {
+  $('#latest-posts').html('')
+}
+
+var fetchPosts = function() {
+  clearPosts();
+  getAllPosts();
+}
+
 getAllPosts();
 
 
 $(document).ready(function(){
   // #tabs for CRUD actions activated
   $( "#tabs" ).tabs();
+  $('button[name=button-fetch]').on('click', fetchPosts)
 
   // general form submission prevention
   $('form').on('submit', function(event){
